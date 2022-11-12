@@ -1,0 +1,10 @@
+[project]
+name = "deletarr"
+description = "Automate movie deletion from Plex with taultulli"
+version = "0.1.0"
+authors = [
+    { name = "Nadav Goldenberg", email = "nadav.goldenberg@icloud.com" }
+]
+dependencies = [
+    "real-easypy"
+]

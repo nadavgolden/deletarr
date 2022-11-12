@@ -15,6 +15,13 @@ class Library:
     def __init_subclass__(cls) -> None:
         cls._SECTIONS_TYPE_REG[cls.SECTION_TYPE] = cls
 
+    def __new__(cls: type[Self], *args, **kwargs) -> Self:
+        section_type = kwargs.get("data").section_type
+        type_cls = cls._SECTIONS_TYPE_REG[section_type]
+        instance = super().__new__(type_cls)
+        instance.__init__(*args, **kwargs)
+        return instance
+
     def __init__(self, tautulli: 'Tautulli', data: Bunch) -> None:
         self.tautulli = tautulli
         self.data = data
@@ -22,7 +29,7 @@ class Library:
     @property
     def media(self) -> ListCollection:
         return ListCollection(
-            Title.from_data(tautulli=self.tautulli, data=title)
+            Title(tautulli=self.tautulli, data=title)
             for title in self.tautulli.api.get_library_media_info(section_id=self.section_id).data
         )
 
@@ -32,7 +39,10 @@ class Library:
         return cls._SECTIONS_TYPE_REG[section_type](*args, **kwargs)
 
     def __getattr__(self, attr):
-        return getattr(self.data, attr)
+        try:
+            return getattr(self.data, attr)
+        except AttributeError:
+            raise AttributeError(f"{self} has not attribute '{attr}'") from None
 
     def __repr__(self) -> str:
         return f"<{self.__class__.__name__}:'{self.section_name}'>"
@@ -50,5 +60,5 @@ class MusicLibrary(Library):
     SECTION_TYPE="artist"
 
 
-class PhotoLibrary(Library):
+class PhotosLibrary(Library):
     SECTION_TYPE="photo"

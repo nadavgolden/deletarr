@@ -1,7 +1,7 @@
 from easypy.collections import ListCollection
 
 from deletarr.api import TautulliAPI
-from deletarr.components.library import Library
+from deletarr.components.library import Library, ShowsLibrary, MoviesLibrary
 
 
 class Tautulli:
@@ -11,12 +11,12 @@ class Tautulli:
 
     def refresh_libraries(self):
         self.libraries = ListCollection(
-            Library.from_data(tautulli=self, data=data) for data in self.api.get_libraries())
+            Library(tautulli=self, data=data) for data in self.api.get_libraries())
 
     @property
-    def movies_lib(self) -> 'Library':
+    def movies_lib(self) -> 'MoviesLibrary':
         return self.libraries.get(section_type="movie", agent="tv.plex.agents.movie")
 
     @property
-    def series_lib(self) -> 'Library':
+    def series_lib(self) -> 'ShowsLibrary':
         return self.libraries.get(section_type="show", agent="tv.plex.agents.series")

@@ -13,6 +13,13 @@ class Title:
     def __init_subclass__(cls) -> None:
         cls._MEDIA_TYPE_REG[cls.MEDIA_TYPE] = cls
 
+    def __new__(cls: type[Self], *args, **kwargs) -> Self:
+        media_type = kwargs.get("data").media_type
+        type_cls = cls._MEDIA_TYPE_REG[media_type]
+        instance = super().__new__(type_cls)
+        instance.__init__(*args, **kwargs)
+        return instance
+
     def __init__(self, tautulli: 'Tautulli', data: Bunch) -> None:
         self.data = data
         self.tautulli = tautulli
@@ -42,7 +49,10 @@ class Title:
         return f"<{self.__class__.__name__}:'{self.data.title}'>"
 
     def __getattr__(self, attr):
-        return getattr(self.data, attr)
+        try:
+            return getattr(self.data, attr)
+        except AttributeError:
+            raise AttributeError(f"{self} has not attribute '{attr}'") from None
 
 
 class Movie(Title):

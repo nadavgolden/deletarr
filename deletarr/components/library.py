@@ -33,11 +33,6 @@ class Library:
             for title in self.tautulli.api.get_library_media_info(section_id=self.section_id).data
         )
 
-    @classmethod
-    def from_data(cls, *args, **kwargs) -> type[Self]:
-        section_type = kwargs.get('data').section_type
-        return cls._SECTIONS_TYPE_REG[section_type](*args, **kwargs)
-
     def __getattr__(self, attr):
         try:
             return getattr(self.data, attr)

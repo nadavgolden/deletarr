@@ -24,11 +24,6 @@ class Title:
         self.data = data
         self.tautulli = tautulli
 
-    @classmethod
-    def from_data(cls, *args, **kwargs) -> type[Self]:
-        media_type = kwargs.get('data').media_type
-        return cls._MEDIA_TYPE_REG[media_type](*args, **kwargs)
-
     @property
     def added_at(self) -> datetime:
         return datetime.fromtimestamp(int(self.data.added_at))
@@ -41,7 +36,7 @@ class Title:
     @property
     def children(self):
         return ListCollection(
-            Title.from_data(tautulli=self.tautulli, data=title) for title in
+            Title(tautulli=self.tautulli, data=title) for title in
             self.tautulli.api.get_library_media_info(section_id=self.section_id, rating_key=self.rating_key).data
         )
 
